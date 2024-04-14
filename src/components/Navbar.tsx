@@ -9,7 +9,6 @@ import NewIcon from './ui/icons/NewIcon';
 import NewFillIcon from './ui/icons/NewFillIcon';
 import ColorButton from './ui/ColorButton';
 import { useSession, signIn, signOut } from 'next-auth/react';
-import Image from 'next/image';
 import Avatar from './ui/Avatar';
 
 const menu = [
@@ -50,7 +49,7 @@ export default function Navbar() {
           {user && (
             <li>
               <Link href={`/user/${user.username}`}>
-                <Avatar image={user.image} />
+                <Avatar image={user.image} size='small' hightlight />
               </Link>
             </li>
           )

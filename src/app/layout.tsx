@@ -3,6 +3,7 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from '@/components/Navbar';
 import AuthContext from '@/context/AuthContext';
+import SideBar from '@/components/SideBar';
 
 const openSans = Open_Sans({ subsets: ["latin"] });
 
