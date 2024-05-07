@@ -1,12 +1,13 @@
+type AvatarSize = 'small' | 'medium' | 'large';
 type Props = { 
   image?: string | null;
-  size?: 'small' | 'normal';
+  size?: AvatarSize;
   hightlight?: boolean;
 }
 
 export default function Avatar({ 
   image, 
-  size='normal', 
+  size='large', 
   hightlight= false 
 }: Props) {
   return <div className={getContainerStyle(size, hightlight)}>
@@ -20,18 +21,28 @@ export default function Avatar({
     </div>
 }
 
-function getContainerStyle(size: string, hightlight: boolean): string {
+function getContainerStyle(size: AvatarSize, hightlight: boolean): string {
   const baseStyle = 'rounded-full flex justify-center items-center';
   const hightlightStyle = hightlight
     ? 'bg-gradient-to-bl from-fuchsia-600 via-rose-500 to-amber-300'
     : '';
-  const sizeStyle = size === 'small'? 
-    'w-9 h-9 p-[0.1rem]' 
-    : 'w-[68px] h-[68px] p-[0.2rem]';
+  const sizeStyle = getContainerSize(size);
   return `${baseStyle} ${hightlightStyle} ${sizeStyle}`;
 }
 
-function getImageSizeStyle(size: string) : string {
-  return size === 'small'? 'w-[34px] h-[34px]':'w-16 h-16';
+function getContainerSize(size: AvatarSize): string {
+  switch(size) {
+    case 'small': return 'w-9 h-9';
+    case 'medium': return 'w-11 h-11';
+    case 'large': return 'w-[68px] h-[68px]';
+  }
+}
+
+function getImageSizeStyle(size: AvatarSize) : string {
+  switch(size) {
+    case 'small': return 'w-[34px] h-[34px] p-[0.1rem]';
+    case 'medium': return 'w-[42px] h-[42px] p-[0.1rem]';
+    case 'large': return 'w-16 h-16 p-[0.2rem]';
+  }
 }
 
