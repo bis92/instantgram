@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { getPost } from '@/service/posts';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/app/lib/auth';
 
 type Context = {
   params: { id: string }
@@ -13,6 +13,6 @@ export async function GET(request: NextRequest, context: Context) {
   if(!user) {
     return new Response('Authentication Error', { status: 401 });
   }
-  return getPost(context.params.id) //
+  return getPost(context.params.id)
   .then(data => NextResponse.json(data));
 }

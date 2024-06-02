@@ -18,3 +18,8 @@ export type FullPost = {
   likes: string[];
   comments: Comment[];
 }
+
+export type ImagePost = {
+  id: string;
+  image: string;
+}

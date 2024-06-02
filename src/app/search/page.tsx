@@ -1,23 +1,12 @@
-'use client';
+import { Metadata } from 'next';
 import UserSearch from '@/components/UserSearch';
-import { useState } from 'react';
 
+export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: 'User Search',
+  description: 'Search users to follow'
+}
 export default function SearchPage() {
-  const [typing, setTyping] = useState('');
-  const [search, setSearch] = useState('');
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    setTyping(value)
-  }
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if(e) {
-      e.preventDefault();
-    }
-    setSearch(typing)
-  }
-
   
   return (
     <UserSearch />
