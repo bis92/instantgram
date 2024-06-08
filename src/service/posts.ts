@@ -12,7 +12,6 @@ const simplePostProjection = `
     "id": _id,
     "createdAt": _createdAt
 `
-
 export async function getFollowingPostsOf(username: string) {
   return client.fetch(
     `*[_type == "post" && author->username == "${username}"
@@ -20,7 +19,6 @@ export async function getFollowingPostsOf(username: string) {
       | order(_createdAt desc){${simplePostProjection}}`
   ).then(mapPosts)
 }
-
 export async function getPost(id: string) {
   return client.fetch(
     `*[_type == "post" && _id == "${id}"][0]{
@@ -35,7 +33,6 @@ export async function getPost(id: string) {
     }`
   ).then(post => ({ ...post, image: urlFor(post.image)}))
 }
-
 export async function getPostUsername(username: string) {
   return client.fetch(
     `*[_type == "post" && author->username == "${username}"]
@@ -45,7 +42,6 @@ export async function getPostUsername(username: string) {
     }`
   ).then(post => ({ ...post, image: urlFor(post.image)}))
 }
-
 export async function getPostsOf(username: string) {
   return client.fetch(
     `*[_type == "post" && author->username == "${username}"]
@@ -55,7 +51,6 @@ export async function getPostsOf(username: string) {
   )
   .then(mapPosts)
 }
-
 export async function getLikedPostsOf(username: string) {
   return client.fetch(
     `*[_type == "post" && "${username}" in likes[]->username]
@@ -65,7 +60,6 @@ export async function getLikedPostsOf(username: string) {
   )
   .then(mapPosts)
 }
-
 export async function getSavedPostsOf(username: string) {
   return client.fetch(
     `*[_type == "post" && _id in *[_type=="user" && username=="${username}"].bookmarks[]._ref]
@@ -75,10 +69,43 @@ export async function getSavedPostsOf(username: string) {
   )
   .then(mapPosts)
 }
-
 function mapPosts(posts: SimplePost[]){
   return posts.map((post: SimplePost) => ({ 
-    ...post, 
+    ...post,
+    likes: post.likes ?? [],
     image: urlFor(post.image)
   }))
+}
+
+export async function likePost(postId: string, userId: string) {
+  return client
+    .patch(postId)
+    .setIfMissing({likes: []})
+    .append('likes', [
+      {
+        _ref: userId,
+        _type: 'reference'
+      }
+    ])
+    .commit({ autoGenerateArrayKeys: true });
+}
+export async function dislikePost(postId: string, userId: string) {
+  return client.patch(postId)
+    .unset([`likes[_ref=="${userId}"]`])
+    .commit()
+}
+export async function addComment(postId: string, userId: string, commentText: string) {
+  const newComment = {
+    _type: 'comment', // 댓글 문서 타입
+    author: {
+      _type: 'reference',
+      _ref: userId
+    },
+    comment: commentText
+  };
+  return await client
+    .patch(postId)
+    .setIfMissing({ comments: [] })
+    .append('comments', [newComment])
+    .commit();
 }

@@ -1,8 +1,10 @@
 export type AuthUser = {
+  id: string;
   name: string;
   username: string;
   email: string;
-  image?: string;  
+  image?: string;
+  bookmarks: string[];
 };
 
 export type SimpleUser = Pick<AuthUser, 'username' | 'image'>;
@@ -10,7 +12,6 @@ export type SimpleUser = Pick<AuthUser, 'username' | 'image'>;
 export type HomeUser = AuthUser & {
   following: SimpleUser[],
   followers: SimpleUser[];
-  bookmarks: string[]
 }
 
 export type SearchUser = AuthUser & {

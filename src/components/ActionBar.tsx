@@ -1,20 +1,47 @@
+import { useSession } from 'next-auth/react';
 import { parseDate } from '@/util/date';
 import BookMarkIcon from './ui/icons/BookmarkIcon';
 import HeartIcon from './ui/icons/HeartIcon';
+import ToggleButton from './ui/ToggleButton';
+import HeartFillIcon from './ui/icons/HeartFillIcon';
+import BookmarkFillIcon from './ui/icons/BookmarkFillIcon';
+import { SimplePost } from '@/model/post';
+import usePosts from '@/hook/posts';
+import useMe from '@/hook/me';
 
 type Props = {
-  likes: string[];
-  username: string;
-  text?: string;
-  createdAt: string;
+  post: SimplePost;
 }
 
-export default function ActionBar({ likes, username, text, createdAt }: Props) {
+export default function ActionBar({ post }: Props) {
+  const { id, likes, username, text, createdAt } = post;
+  const { setBookmark, user } = useMe();
+  const liked = user ? likes.includes(user.username) : false;
+  const { setLike } = usePosts();
+  const bookmarked = user?.bookmarks.includes(id) ?? false;
+  const handleLike = (like: boolean) => {
+    user && setLike(post, user.username, like);
+  }
+
+  const handleBookmark = (bookmark: boolean) => {
+    user && setBookmark(id, bookmark);
+  }
+
   return (
     <>
       <div className='flex justify-between my-2 px-4'>
-        <HeartIcon />
-        <BookMarkIcon />
+        <ToggleButton 
+          toggled={liked} 
+          onToggle={handleLike} 
+          onIcon={<HeartFillIcon />} 
+          offIcon={<HeartIcon />} 
+        />
+        <ToggleButton 
+          toggled={bookmarked} 
+          onToggle={handleBookmark} 
+          onIcon={<BookmarkFillIcon />} 
+          offIcon={<BookMarkIcon />} 
+        />
       </div>
       <div className='px-4 py-1'>
         <p className='text-sm font-bold mb-2'>{`${likes?.length ?? 0} ${likes?.length > 1 ? 'likes':'like'}`}</p>
