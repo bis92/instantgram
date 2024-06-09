@@ -13,7 +13,7 @@ type Props = {
 }
 
 export default function PostGridCard({ post, priority = false }: Props) {
-  const { image, username } = post;
+  const { image, username, comments } = post;
   const [openModal, setOpenModal] = useState(false);
   const {data: session} = useSession();
   const handleOpenPost = () => {
@@ -22,6 +22,7 @@ export default function PostGridCard({ post, priority = false }: Props) {
     }
     setOpenModal(true);
   }
+
   return (
     <div className='relative w-full aspect-square'>
       <Image 

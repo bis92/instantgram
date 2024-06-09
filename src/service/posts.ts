@@ -1,4 +1,4 @@
-import { SimplePost } from '@/model/post';
+import { FullPost, SimplePost } from '@/model/post';
 import { client, urlFor } from './sanity';
 
 const simplePostProjection = `
@@ -19,6 +19,11 @@ export async function getFollowingPostsOf(username: string) {
       | order(_createdAt desc){${simplePostProjection}}`
   ).then(mapPosts)
 }
+
+const mapPost = (post: FullPost) => {
+  return post
+}
+
 export async function getPost(id: string) {
   return client.fetch(
     `*[_type == "post" && _id == "${id}"][0]{
@@ -31,7 +36,9 @@ export async function getPost(id: string) {
       "id":_id,
       "createdAt":_createdAt
     }`
-  ).then(post => ({ ...post, image: urlFor(post.image)}))
+  )
+  .then(post => ({ ...post, image: urlFor(post.image)}))
+  // .then(mapPost);
 }
 export async function getPostUsername(username: string) {
   return client.fetch(
@@ -94,18 +101,23 @@ export async function dislikePost(postId: string, userId: string) {
     .unset([`likes[_ref=="${userId}"]`])
     .commit()
 }
-export async function addComment(postId: string, userId: string, commentText: string) {
+export async function addComment(postId: string, userId: string, comment: string) {
   const newComment = {
-    _type: 'comment', // 댓글 문서 타입
+    _type: 'comment',
     author: {
       _type: 'reference',
       _ref: userId
     },
-    comment: commentText
+    comment
   };
-  return await client
+  return client
     .patch(postId)
     .setIfMissing({ comments: [] })
-    .append('comments', [newComment])
-    .commit();
+    .append('comments', [
+      {
+        comment,
+        author: { _ref: userId, _type: 'reference' },
+      }
+    ])
+    .commit({ autoGenerateArrayKeys: true });
 }
