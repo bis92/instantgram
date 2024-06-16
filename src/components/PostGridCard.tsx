@@ -13,7 +13,7 @@ type Props = {
 }
 
 export default function PostGridCard({ post, priority = false }: Props) {
-  const { image, username, comments } = post;
+  const { image, username } = post;
   const [openModal, setOpenModal] = useState(false);
   const {data: session} = useSession();
   const handleOpenPost = () => {
@@ -38,7 +38,7 @@ export default function PostGridCard({ post, priority = false }: Props) {
         openModal && (
           <ModalPortal>
             <PostModal onClose={() => setOpenModal(false)}>
-              <PostDetail post={post} />
+              <PostDetail post={post}/>
             </PostModal>
           </ModalPortal>
         )
